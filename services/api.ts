@@ -4,7 +4,7 @@ export interface APIResponse {
 
   export const checkURL = async (url: string): Promise<APIResponse> => {
     try {
-      const response = await fetch('https://c398-38-25-22-133.ngrok-free.app/api/v1/qrscan', {
+      const response = await fetch('http://18.208.183.114:3001/api/v1/qrscan', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

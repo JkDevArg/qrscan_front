@@ -30,20 +30,14 @@ const ScanScreen: React.FC = () => {
     return (
       <View style={styles.container}>
         <Text style={styles.message}>
-          We need your permission to show the camera
+          Necesitamos tu permiso para usar la cámara
         </Text>
-        <Button onPress={requestPermission} title="Grant Permission" />
+        <Button onPress={requestPermission} title="Otorgar permiso" />
       </View>
     );
   }
 
-  const handleBarCodeScanned = async ({
-    type,
-    data,
-  }: {
-    type: string;
-    data: string;
-  }) => {
+  const handleBarCodeScanned = async ({ type, data }: { type: string; data: string }) => {
     if (scanned) return;
 
     clearTimeout(debounceTimeout);
@@ -52,26 +46,22 @@ const ScanScreen: React.FC = () => {
 
       try {
         const response = await checkURL(data);
-        if (response) {
+        console.log(response)
+
+        if (!response) {
           setUrlToOpen(data);
-          setModalMessage("La URL es segura, ¿desea continuar?");
+          setModalMessage("Esta URL parece segura. ¿Deseas abrirla?");
           setModalVisible(true);
         } else {
-          setModalMessage("Esta URL es maliciosa!");
+          setModalMessage("¡Cuidado! Esta URL ha sido marcada como maliciosa.");
           setModalVisible(true);
         }
       } catch (error) {
-        console.error("Error checking URL", error);
-        setModalMessage("No se pudo verificar la URL.");
+        //console.error("Error al verificar la URL:", error);
+        setModalMessage("No se pudo verificar la URL. Inténtalo nuevamente.");
         setModalVisible(true);
       }
-    }, 300);
-  };
-
-  const handleGithubPress = () => {
-    // Acciones al presionar el botón de Github
-    Linking.openURL("https://github.com/JkDevArg");
-    console.log("Github button pressed");
+    }, 100);
   };
 
   const toggleCameraFacing = () => {
@@ -103,28 +93,20 @@ const ScanScreen: React.FC = () => {
         onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
       />
 
+      <View style={styles.overlay}>
+        <View style={styles.frameContainer}>
+          <Text style={styles.scanText}>ScanQR</Text>
+          <View style={styles.frame} />
+        </View>
+      </View>
+
       <View style={styles.githubButtonContainer}>
-        <TouchableOpacity
-          style={styles.githubButton}
-          onPress={handleGithubPress}
-        >
-          <Text style={styles.githubText}>Github</Text>
+        <TouchableOpacity style={styles.githubButton} onPress={() => Linking.openURL("https://github.com/JkDevArg")}>
+          <Text style={styles.githubText}>GitHub</Text>
         </TouchableOpacity>
       </View>
 
-      {/* <View style={styles.overlay}>
-        <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-          <Text style={styles.text}>Flip Camera</Text>
-        </TouchableOpacity>
-      </View> */}
-
-      {/* Modal */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={closeModal}
-      >
+      <Modal animationType="slide" transparent={true} visible={modalVisible} onRequestClose={closeModal}>
         <View style={styles.modalBackground}>
           <View style={styles.modalContainer}>
             <Text style={styles.modalMessage}>{modalMessage}</Text>
@@ -144,28 +126,41 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
   },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  frameContainer: {
+    width: 260,
+    height: 260,
+    borderRadius: 15,
+    backgroundColor: "rgba(73, 73, 73, 0.1)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  frame: {
+    width: 250,
+    height: 250,
+    borderRadius: 10,
+    backgroundColor: "rgba(0, 0, 0, 0.1)",
+  },
+  scanText: {
+    position: "absolute",
+    top: -25,
+    left: -5,
+    fontSize: 16,
+    fontWeight: "normal",
+    color: "#FFFFFF",
+    //backgroundColor: "rgba(0, 0, 0, 0.1)",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 5,
+  },
+
   message: {
     textAlign: "center",
     paddingBottom: 20,
-  },
-  overlay: {
-    position: "absolute",
-    bottom: 100,
-    left: 0,
-    right: 250,
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-  },
-  button: {
-    backgroundColor: "rgba(0,0,0,0.5)",
-    borderRadius: 5,
-    padding: 10,
-  },
-  text: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "white",
   },
   modalBackground: {
     flex: 1,
@@ -193,8 +188,7 @@ const styles = StyleSheet.create({
   githubButtonContainer: {
     position: "absolute",
     top: 50,
-    left: 0,
-    right: 300,
+    left: 20,
     alignItems: "center",
   },
   githubButton: {

@@ -22,8 +22,10 @@
       },
       "permissions": [
         "CAMERA",
-        "RECORD_AUDIO"
-      ]
+        "RECORD_AUDIO",
+        "android.permission.CAMERA"
+      ],
+      "package": "com.fetudev.qrsec"
     },
     "web": {
       "bundler": "metro",
@@ -44,6 +46,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "f4c79baf-e9ca-4761-9f00-b43ff3dc7526"
+      }
     }
   }
 }
